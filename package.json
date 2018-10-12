@@ -1,0 +1,45 @@
+{
+  "name": "qgym-api",
+  "version": "0.0.0",
+  "description": "Backend API for the Quick Gym project",
+  "main": "server.js",
+  "scripts": {
+    "start:dev": "nodemon server --exec babel-node",
+    "start:prod": "export NODE_ENV=production && node ./dist/server.js",
+    "test": "export NODE_ENV=test && mocha --require babel-core/register --timeout 10000",
+    "coverage": "babel-node ./node_modules/.bin/babel-istanbul cover _mocha -- ./test/** --require babel-core/register --timeout 10000",
+    "build": "rimraf dist/ && babel ./ --out-dir dist/ --ignore ./node_modules,./.babelrc,./package*.json,./README* --copy-files"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AnthonyGW/qgym-api.git"
+  },
+  "keywords": [],
+  "author": "Anthony Waithaka",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/AnthonyGW/qgym-api/issues"
+  },
+  "homepage": "https://github.com/AnthonyGW/qgym-api#readme",
+  "dependencies": {
+    "bcrypt": "^3.0.1",
+    "config": "^2.0.1",
+    "connect-mongo": "^2.0.1",
+    "express": "^4.16.3",
+    "express-session": "^1.15.6",
+    "mongoose": "^5.3.2",
+    "morgan": "^1.9.1"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.3",
+    "babel-istanbul": "^0.12.2",
+    "babel-plugin-istanbul": "^5.0.1",
+    "babel-preset-env": "^1.7.0",
+    "chai": "^4.2.0",
+    "chai-http": "^4.2.0",
+    "mocha": "^5.2.0",
+    "nodemon": "^1.18.4",
+    "rimraf": "^2.6.2"
+  }
+}
