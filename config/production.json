@@ -1,5 +1,5 @@
 {
-  "DBName": "dev",
-  "PORT": 3030,
-  "SESSION_SECRET": "sgfcbhjo3fgbn2j30ncsdh8f92uhrbn1"
+  "DBName": "",
+  "PORT": "",
+  "SESSION_SECRET": ""
 }
