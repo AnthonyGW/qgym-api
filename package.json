@@ -6,8 +6,8 @@
   "scripts": {
     "start:dev": "nodemon server --exec babel-node",
     "start:prod": "export NODE_ENV=production && node ./dist/server.js",
-    "test": "export NODE_ENV=test && mocha --require babel-core/register --timeout 10000",
-    "coverage": "babel-node ./node_modules/.bin/babel-istanbul cover _mocha -- ./test/** --require babel-core/register --timeout 10000",
+    "test": "export NODE_ENV=test && mocha --require babel-core/register --require babel-polyfill --timeout 10000",
+    "coverage": "babel-node ./node_modules/.bin/babel-istanbul cover _mocha -- ./test/** --require babel-core/register --require babel-polyfill --timeout 10000",
     "build": "rimraf dist/ && babel ./ --out-dir dist/ --ignore ./node_modules,./.babelrc,./package*.json,./README* --copy-files"
   },
   "repository": {
@@ -35,7 +35,9 @@
     "babel-core": "^6.26.3",
     "babel-istanbul": "^0.12.2",
     "babel-plugin-istanbul": "^5.0.1",
+    "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.7.0",
+    "babel-preset-stage-3": "^6.24.1",
     "chai": "^4.2.0",
     "chai-http": "^4.2.0",
     "mocha": "^5.2.0",

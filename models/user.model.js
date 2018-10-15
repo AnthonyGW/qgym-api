@@ -17,21 +17,47 @@ const UserSchema = new mongoose.Schema({
   }
 });
 
-// Check if email and password input exist in the database
-// If user is authenticated, supply an encrypted token with the user ID
-UserSchema.statics.authenticate = (userData, callback) => {
-  User.findOne({ email: userData.email })
-  .exec((error, user) => {
-    if(error) return callback(error, null);
-    if(!user) return callback(createError("User not found.", 401), null);
-    bcrypt.compare(userData.password, user.password, (error, result) => {
-      if(!error && result){
-        return callback(null, user._id);
-      } else if(!error && !result){
-        return callback(createError("Wrong password.", 401), null);
-      }
-      return callback(error, null);
-    });
+// Check if email exists in the database
+// If email exists, check if the input password hash matches 
+// the one in the database
+// If the passwords match, return the user ID,
+// otherwise return errors
+UserSchema.statics.authenticate = (userData) => {
+  return new Promise((resolve, reject) => {
+    User.findOne({ email: userData.email })
+        .exec((error, user) => {
+          if(error) return reject(error);
+          if(!user) return reject(createError("User not found.", 404));
+          bcrypt.compare(userData.password, user.password)
+                .then((result) => {
+                  if(result){
+                    return resolve(user._id);
+                  } else {
+                    return reject(createError("Email or password is wrong.", 401));
+                  }
+                }).catch(error => reject(error));
+        });
+  });
+};
+
+// Check if ID exists in the database
+// Retrieve the user and check if the supplied password
+// matches the password of the user record.
+UserSchema.statics.authorize = (userID, userPassword) => {
+  return new Promise((resolve, reject) => {
+    User.findOne({ _id: userID })
+      .exec((error, user) => {
+        if(error) return reject(error);
+        if(!user) return reject(createError("User not found.", 404));
+        bcrypt.compare(userPassword, user.password)
+              .then((result) => {
+                if(result){
+                  return resolve(true);
+                } else {
+                  return reject(createError("Wrong password.", 401));
+                }
+              }).catch(error => reject(error));
+      });
   });
 };
 

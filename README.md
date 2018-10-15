@@ -19,5 +19,7 @@ Backend API for the Quick Gym project
 
 | Type | Endpoint | Data | Authorization Required | Expected Response |
 | --- | --- | --- | --- | --- | 
-| `POST` | `/signup` | `{ email, password }` | `No` | `200, { id: "", email: "" }` |
-| `POST` | `/login` | `{ email, password }` | `No` | `200, { message: "Authorization successful. Check session ID named connect.sid in cookies." }` |
+| `POST` | `/api/v1/users/signup` | `{ email, password }` | `No` | `200, { id: "", email: "" }` |
+| `POST` | `/api/v1/users/signin` | `{ email, password }` | `No` | `200, { message: "Authorization successful. Check session ID named connect.sid in cookies." }` |
+| `GET` | `/api/v1/users/signout` | None | `Yes` | `200, { message: "Logged out successfully." }` |
+| `PUT` | `/api/v1/users/update` | `{ currentPassword, newEmail, newPassword }` | `Yes` | `200, { message: "User data has been updated." }` |
