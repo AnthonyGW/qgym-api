@@ -23,16 +23,32 @@ UserSchema.statics.authenticate = (userData, callback) => {
   User.findOne({ email: userData.email })
   .exec((error, user) => {
     if(error) return callback(error, null);
-    if(!user) return callback(createError("User not found.", 401), null);
+    if(!user) return callback(createError("User not found.", 404), null);
     bcrypt.compare(userData.password, user.password, (error, result) => {
       if(!error && result){
         return callback(null, user._id);
       } else if(!error && !result){
-        return callback(createError("Wrong password.", 401), null);
+        return callback(createError("Email or password is wrong.", 401), null);
       }
       return callback(error, null);
     });
   });
+};
+
+UserSchema.statics.authorize = (userID, userPassword, callback) => {
+  User.findOne({ _id: userID })
+      .exec((error, user) => {
+        if(error) return callback(error, null);
+        if(!user) return callback(createError("User not found.", 404), null);
+        bcrypt.compare(userPassword, user.password, (error, result) => {
+          if(!error && result){
+            return callback(null, true);
+          } else if(!error && !result){
+            return callback(createError("Wrong password.", 401), null);
+          }
+          return callback(error, null);
+        });
+      });
 };
 
 // Encrypt password before saving it in the database

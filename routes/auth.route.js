@@ -1,3 +1,5 @@
+'use strict';
+
 import express from 'express';
 import User from '../controllers/user.handler';
 
@@ -11,5 +13,11 @@ router.route('/signup')
 
 router.route('/signin')
       .post(User.signIn);
+
+router.route('/signout')
+      .get(User.signOut);
+
+router.route('/update')
+      .put(User.updateUser);
 
 export default router;

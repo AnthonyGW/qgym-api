@@ -1,5 +1,6 @@
 'use strict';
 
+import bcrypt from 'bcrypt';
 import { createError } from './error.util';
 
 // verify the entire signup form
@@ -21,4 +22,23 @@ const verifySignup = (body) => {
   return {status: true};
 };
 
-export { verifySignup }
+// format new user data
+const formatUserData = (body) => {
+  let userData = {};
+  if(body.email){
+    Object.assign(
+      userData, 
+      { email: body.email.trim() }
+    );
+  }
+
+  if(body.password){
+    Object.assign(
+      userData,
+      { password: body.password }
+    );
+  }
+
+  return userData;
+}
+export { verifySignup, formatUserData }
