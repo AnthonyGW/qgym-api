@@ -15,13 +15,13 @@ const baseURL = '/api/v1';
 describe('user authentication tests', () => {
 
   before((done) => {
-    User.deleteMany({}, (err) => { 
+    User.deleteMany({}, err => { 
       done();           
     });
   });
 
   describe('test user sign up', () => {
-    it('should sign up a new user', (done) => {
+    it('should sign up a new user', done => {
       const userData = {
         email: 'test@email.com',
         password: 'testPassword'
@@ -38,7 +38,7 @@ describe('user authentication tests', () => {
           });
     });
   
-    it('should not sign up a new user with the same email', (done) => {
+    it('should not sign up a new user with the same email', done => {
       const userData = {
         email: 'test@email.com',
         password: 'testPassword'
@@ -55,7 +55,7 @@ describe('user authentication tests', () => {
           });
     });
   
-    it('should not sign up a new user without email', (done) => {
+    it('should not sign up a new user without email', done => {
       const userData = {
         email: '',
         password: 'testPassword'
@@ -71,7 +71,7 @@ describe('user authentication tests', () => {
           });
     });
   
-    it('should not sign up a new user without password', (done) => {
+    it('should not sign up a new user without password', done => {
       const userData = {
         email: 'test@email.com',
         password: ''
@@ -87,7 +87,7 @@ describe('user authentication tests', () => {
           });
     });
   
-    it('should not sign up a new user with the wrong email format', (done) => {
+    it('should not sign up a new user with the wrong email format', done => {
       const userData = {
         email: 'testemail.com',
         password: 'testPassword'
@@ -105,7 +105,7 @@ describe('user authentication tests', () => {
   });
   
   describe('test user sign in and functionality', () => {
-    it('should sign in a user', (done)=>{
+    it('should sign in a user', done=>{
       const userData = {
         email: 'test@email.com',
         password: 'testPassword'
@@ -121,7 +121,7 @@ describe('user authentication tests', () => {
           });
     });
 
-    it('should not sign in a user without an email', (done) => {
+    it('should not sign in a user without an email', done => {
       const userData = {
         email: '',
         password: 'testPassword'
@@ -137,7 +137,7 @@ describe('user authentication tests', () => {
           });
     });
 
-    it('should not sign in a user without an password', (done) => {
+    it('should not sign in a user without an password', done => {
       const userData = {
         email: 'test@email.com',
         password: ''
@@ -153,7 +153,7 @@ describe('user authentication tests', () => {
           });
     });
 
-    it('should not sign in a user if email does not exist in records', (done) => {
+    it('should not sign in a user if email does not exist in records', done => {
       const userData = {
         email: 'test2@email.com',
         password: 'testPassword'
@@ -169,7 +169,7 @@ describe('user authentication tests', () => {
           });
     });
 
-    it('should not sign in a user if password is wrong', (done) => {
+    it('should not sign in a user if password is wrong', done => {
       const userData = {
         email: 'test@email.com',
         password: 'testPassword2'
@@ -190,7 +190,7 @@ describe('user authentication tests', () => {
 describe('user functionality tests', () => {
 
   before((done) => {
-    User.deleteMany({}, (err) => { 
+    User.deleteMany({}, err => { 
       done();           
     });
   });
@@ -204,7 +204,7 @@ describe('user functionality tests', () => {
   });
 
   describe('test user can update their account details', () => {
-    it('should sign up a new user', (done) => {
+    it('should sign up a new user', done => {
       const userData = {
         email: 'test2@email.com',
         password: 'testPassword'
@@ -218,7 +218,7 @@ describe('user functionality tests', () => {
           });
     });
 
-    it('should update a user email', (done) => {
+    it('should update a user email', done => {
       const loginData = {
         email: 'test2@email.com',
         password: 'testPassword'
@@ -230,7 +230,7 @@ describe('user functionality tests', () => {
       const updateData = () => {
         reqAgent.put(baseURL + '/users/update')
                 .send(userData)
-                .then((res) => {
+                .then(res => {
                   res.should.have.status(200);
                   res.body.message.should.be.eql('User data has been updated.');
                   done();
@@ -240,13 +240,13 @@ describe('user functionality tests', () => {
       const reqAgent = chai.request.agent(server);
       reqAgent.post(baseURL + '/users/signin')
               .send(loginData)
-              .then((res) => {
+              .then(res => {
                 res.should.have.cookie('connect.sid');
                 updateData();
-              });
+              }).catch(error => console.log(error.message));
     });
 
-    it('should update a user password', (done) => {
+    it('should update a user password', done => {
       const loginData = {
         email: 'test2@email2.com',
         password: 'testPassword'
@@ -258,7 +258,7 @@ describe('user functionality tests', () => {
       const updateData = () => {
         reqAgent.put(baseURL + '/users/update')
                 .send(userData)
-                .then((res) => {
+                .then(res => {
                   res.should.have.status(200);
                   res.body.message.should.be.eql('User data has been updated.');
                   done();
@@ -268,13 +268,13 @@ describe('user functionality tests', () => {
       const reqAgent = chai.request.agent(server);
       reqAgent.post(baseURL + '/users/signin')
               .send(loginData)
-              .then((res) => {
+              .then(res => {
                 res.should.have.cookie('connect.sid');
                 updateData();
-              });
+              }).catch(error => console.log(error.message));
     });
 
-    it('should not update if user is not logged in', (done) => {
+    it('should not update if user is not logged in', done => {
       const userData = {
         currentPassword: 'testPassword',
         newEmail: 'test2@email2.com'
@@ -282,14 +282,14 @@ describe('user functionality tests', () => {
       chai.request(server)
           .put(baseURL + '/users/update')
           .send(userData)
-          .then((res) => {
+          .then(res => {
             res.should.have.status(401);
-            res.body.message.should.be.eql('User must log in to use this feature.');
+            res.body.error.message.should.be.eql('User must log in to use this feature.');
             done();
           });
     });
 
-    it('should not update if user has entered the wrong current password', (done) => {
+    it('should not update if user has entered the wrong current password', done => {
       const loginData = {
         email: 'test2@email2.com',
         password: 'testPassword2'
@@ -301,7 +301,7 @@ describe('user functionality tests', () => {
       const updateData = () => {
         reqAgent.put(baseURL + '/users/update')
                 .send(userData)
-                .then((res) => {
+                .then(res => {
                   res.should.have.status(401);
                   res.body.error.message.should.be.eql('Wrong password.');
                   done();
@@ -311,13 +311,13 @@ describe('user functionality tests', () => {
       const reqAgent = chai.request.agent(server);
       reqAgent.post(baseURL + '/users/signin')
               .send(loginData)
-              .then((res) => {
+              .then(res => {
                 res.should.have.cookie('connect.sid');
                 updateData();
-              });
+              }).catch(error => console.log(error.message));
     });
 
-    it('should not update if user has entered an existing email', (done) => {
+    it('should not update if user has entered an existing email', done => {
       const loginData = {
         email: 'test2@email2.com',
         password: 'testPassword2'
@@ -329,9 +329,9 @@ describe('user functionality tests', () => {
       const updateData = () => {
         reqAgent.put(baseURL + '/users/update')
                 .send(userData)
-                .then((res) => {
+                .then(res => {
                   res.should.have.status(403);
-                  res.body.message.should.be.eql('That email is already in use.');
+                  res.body.error.message.should.be.eql('That email is already in use.');
                   done();
                 });
       };
@@ -339,30 +339,42 @@ describe('user functionality tests', () => {
       const reqAgent = chai.request.agent(server);
       reqAgent.post(baseURL + '/users/signin')
               .send(loginData)
-              .then((res) => {
+              .then(res => {
                 res.should.have.cookie('connect.sid');
                 updateData();
-              });
+              }).catch(error => console.log(error.message));
     });
 
-    it('should log out a logged in user', (done) => {
+    it('should sign out a signed in user', done => {
       const userData = {
         email: 'test2@email2.com',
         password: 'testPassword2'
+      };
+      const signoutUser = res => {
+        res.should.have.status(200);
+        res.should.have.cookie('connect.sid');
+        reqAgent.get(baseURL + '/users/signout')
+                .then(res => {
+                  res.should.have.status(200);
+                  done();
+                });
       };
 
       const reqAgent = chai.request.agent(server);
       reqAgent.post(baseURL + '/users/signin')
               .send(userData)
-              .then((res) => {
-                res.should.have.status(200);
-                res.should.have.cookie('connect.sid');
-                reqAgent.get(baseURL + '/users/signout')
-                        .then((res) => {
-                          res.should.have.status(200);
-                          done();
-                        });
-              });
+              .then(signoutUser)
+              .catch(error => console.log(error.message));
+    });
+
+    it('should not sign out a user who is not signed in', done => {
+        chai.request(server)
+            .get(baseURL + '/users/signout')
+            .end((error, res) => {
+              res.should.have.status(401);
+              res.body.error.message.should.be.eql('User must log in to use this feature');
+              done();
+            });
     });
   });
 });
