@@ -6,8 +6,8 @@
   "scripts": {
     "start:dev": "nodemon server --exec babel-node",
     "start:prod": "export NODE_ENV=production && node ./dist/server.js",
-    "test": "export NODE_ENV=test && mocha --require babel-core/register --require babel-polyfill --timeout 10000",
-    "coverage": "babel-node ./node_modules/.bin/babel-istanbul cover _mocha -- ./test/** --require babel-core/register --require babel-polyfill --timeout 10000",
+    "test": "export NODE_ENV=test && mocha --require babel-core/register --require babel-polyfill --timeout 10000 --exit",
+    "coverage": "export NODE_ENV=test && babel-node ./node_modules/.bin/babel-istanbul cover _mocha -- ./test/** --require babel-core/register --require babel-polyfill --timeout 10000 --exit",
     "build": "rimraf dist/ && babel ./ --out-dir dist/ --ignore ./node_modules,./.babelrc,./package*.json,./README* --copy-files"
   },
   "repository": {

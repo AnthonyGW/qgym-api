@@ -1,6 +1,5 @@
 'use strict';
 
-import bcrypt from 'bcrypt';
 import { createError } from './error.util';
 
 // verify the entire signup form
@@ -38,5 +37,57 @@ const formatUserData = body => {
 
     return resolve(userData);
   });
-}
-export { verifySignup, formatUserData }
+};
+
+// format new workout set data
+const formatWorkoutData = (body, userId) => {
+  return new Promise((resolve, reject) => {
+    let workoutData = {};
+    if(body.name){
+      Object.assign(
+        workoutData,
+        { name: body.name.trim() }
+      )
+    }
+
+    if(body.exercises[0] !== ''){
+      Object.assign(
+        workoutData,
+        { exercises: body.exercises }
+      )
+    }
+
+    if(body.track){
+      Object.assign(
+        workoutData,
+        { track: body.track }
+      )
+    }
+
+    if(userId){
+      Object.assign(
+        workoutData,
+        { user: userId}
+      )
+    }
+
+    return resolve(workoutData);
+  });
+};
+
+const formatWorkoutResponse = responseObject => {
+  const response = {
+    id: responseObject._id,
+    name: responseObject.name,
+    exercises: responseObject.exercises,
+    track: responseObject.track
+  }
+  return response;
+};
+
+export {
+  verifySignup,
+  formatUserData,
+  formatWorkoutData,
+  formatWorkoutResponse
+};
