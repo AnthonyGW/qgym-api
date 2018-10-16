@@ -41,7 +41,7 @@ class UserController{
         password: req.body.password
       }
       if( !userData.email || !userData.password )
-        return next(createError('All fields required.', 401));
+        throw (createError('All fields required.', 401));
     
       User.authenticate(userData)
           .then(userId => {
@@ -66,7 +66,7 @@ class UserController{
         req.session.destroy(error => {
           if(error) return next(error);
           return res.status(200)
-                    .json({message: 'Logged out successfully.'});
+                    .json({message: 'Signed out successfully.'});
         });
       } else {
         throw createError('User must log in to use this feature', 401);
@@ -119,17 +119,18 @@ class UserController{
             .catch(error => next(error));
       };
 
+      const checkEmail = () => {
+        User.findOne({ email: newUserData.email })
+            .then(user => {
+              if(user) return Promise.reject(createError('That email is already in use.', 403));
+            }).then(authorizeUser).catch(error => next(error));
+      };
+
       if(userID){
         User.findById(userID)
             .then(doc => {
               if(!doc) Promise.reject(createError('User not found', 404));
-            }).then(() => {
-              User.findOne({ email: newUserData.email })
-                  .then(user => {
-                    if(user) return Promise.reject(createError('That email is already in use.', 403));
-                  }).then(authorizeUser)
-                  .catch(error => next(error));
-            }).catch(error => next(error));
+            }).then(checkEmail).catch(error => next(error));
       } else {
         throw createError('User must log in to use this feature.', 401);
       }

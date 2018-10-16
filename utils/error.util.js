@@ -2,7 +2,7 @@
 
 // error classification that can be made human-readable
 let error_types = {
-  "email is in use": /^E11000 duplicate key error.+email_1/g,
+  "That email is already in use.": /^E11000 duplicate key error.+email_1/g,
 };
 
 // generate an error with a custom message and status code
