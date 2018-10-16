@@ -12,17 +12,23 @@ chai.use(chaiHttp);
 const should = chai.should();
 const baseURL = '/api/v1';
 
-const userSignin = (signinData, callback) => {
-  const reqAgent = chai.request.agent(server);
-  reqAgent.post(baseURL + '/users/signin')
-          .send(signinData)
-          .then(res => {
-            res.should.have.cookie('connect.sid');
-            callback(reqAgent);
-          }).catch(error => console.log(error.message));
+const userSignin = async (signinData, callback) => {
+  try{
+    const reqAgent = chai.request.agent(server);
+    const res = await reqAgent.post(baseURL + '/users/signin')
+                              .send(signinData)
+    res.should.have.cookie('connect.sid');
+    callback(reqAgent);
+  } catch(error){
+    console.log(error.message);
+  }
 };
 
 describe('user authentication tests', () => {
+
+  before(done => {
+    User.deleteMany({}, done);
+  });
 
   describe('test user sign up', () => {
     it('should sign up a new user', done => {

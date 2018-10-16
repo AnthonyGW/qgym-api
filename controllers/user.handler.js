@@ -19,17 +19,15 @@ class UserController{
       }
       await verifySignup(userData);
 
-      User.create(userData)
-          .then((user) => {
-            return res.status(200)
-                      .json({ id: user._id, email: user.email });
-          }).catch(error => next(error));
+      const user = await User.create(userData);
+      return res.status(200)
+                .json({ id: user._id, email: user.email });
     } catch(error){
       return next(error);
     }
   };
 
-  static signIn(req, res, next){
+  static async signIn(req, res, next){
     // Steps:
     // 1. Check the format of the user input
     // 2. Check that the user exists
@@ -43,13 +41,11 @@ class UserController{
       if( !userData.email || !userData.password )
         throw (createError('All fields required.', 401));
     
-      User.authenticate(userData)
-          .then(userId => {
-            req.session.userId = userId;
-            res.status(200)
-              .json({'message': 'Authorization successful. ' +
-                                'Check session ID named connect.sid in cookies.'});
-          }).catch(error => next(error));
+      const userId = await User.authenticate(userData);
+      req.session.userId = userId;
+      res.status(200)
+        .json({'message': 'Authorization successful. ' +
+                          'Check session ID named connect.sid in cookies.'});
     } catch(error){
       return next(error);
     }
@@ -64,7 +60,7 @@ class UserController{
     try{
       if(req.session.userId){
         req.session.destroy(error => {
-          if(error) return next(error);
+          if(error) throw error;
           return res.status(200)
                     .json({message: 'Signed out successfully.'});
         });
@@ -102,35 +98,30 @@ class UserController{
       }
       currentUserData = await formatUserData(currentUserData);
 
-      const updateUser = () => {
+      const updateUser = async () => {
         if(newUserData.password){
           newUserData.password = bcrypt.hashSync(newUserData.password, 10);
         }
-        User.updateOne(newUserData)
-            .then(user => {
-              res.status(200)
-                .json({message: 'User data has been updated.'});
-            });
+        await User.updateOne(newUserData);
+        res.status(200)
+          .json({message: 'User data has been updated.'});
       };
 
-      const authorizeUser = () => {
-        User.authorize(userID, currentUserData.password)
-            .then(updateUser)
-            .catch(error => next(error));
+      const authorizeUser = async () => {
+        await User.authorize(userID, currentUserData.password)
+        await updateUser();
       };
 
-      const checkEmail = () => {
-        User.findOne({ email: newUserData.email })
-            .then(user => {
-              if(user) return Promise.reject(createError('That email is already in use.', 403));
-            }).then(authorizeUser).catch(error => next(error));
+      const checkEmail = async () => {
+        const user = await User.findOne({ email: newUserData.email });
+        if(user) return Promise.reject(createError('That email is already in use.', 403));
+        await authorizeUser();
       };
 
       if(userID){
-        User.findById(userID)
-            .then(doc => {
-              if(!doc) Promise.reject(createError('User not found', 404));
-            }).then(checkEmail).catch(error => next(error));
+        const doc = await User.findById(userID);
+        if(!doc) Promise.reject(createError('User not found', 404));
+        await checkEmail();
       } else {
         throw createError('User must log in to use this feature.', 401);
       }

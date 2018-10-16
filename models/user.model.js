@@ -17,16 +17,18 @@ const UserSchema = new mongoose.Schema({
   }
 });
 
-const checkUser = (user, password, resolve, reject) => {
-  if(!user) return reject(createError("Authentication failed.", 404));
-  bcrypt.compare(password, user.password)
-        .then(result => {
-          if(result){
-            return resolve(user._id);
-          } else {
-            return reject(createError("Authentication failed.", 401));
-          }
-        }).catch(error => reject(error));
+const checkUser = async (user, password, resolve, reject) => {
+  try{
+    if(!user) return reject(createError("Authentication failed.", 404));
+    const result = await bcrypt.compare(password, user.password);
+    if(result){
+      return resolve(user._id);
+    } else {
+      return reject(createError("Authentication failed.", 401));
+    }
+  } catch(error){
+    reject(error)
+  }
 };
 
 // Check if email exists in the database
@@ -36,13 +38,16 @@ const checkUser = (user, password, resolve, reject) => {
 // otherwise return errors
 UserSchema.statics.authenticate = (userData) => {
   return new Promise((resolve, reject) => {
-    const findUser = User.findOne({ email: userData.email });
-    findUser.exec()
-            .then(user => checkUser(user,
-                                    userData.password,
-                                    resolve,
-                                    reject))
-            .catch(error => reject(error));
+    try{
+      const findUser = User.findOne({ email: userData.email });
+      findUser.exec()
+              .then(user => checkUser(user,
+                                      userData.password,
+                                      resolve,
+                                      reject));
+    } catch(error){
+      reject(error);
+    }
   });
 };
 
