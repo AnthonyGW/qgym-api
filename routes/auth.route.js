@@ -11,12 +11,21 @@ const router = express.Router();
 router.route('/signup')
       .post(User.signUp);
 
+/*
+  POST api/v1/users/signin
+*/
 router.route('/signin')
       .post(User.signIn);
 
+/*
+  GET api/v1/users/signout
+*/
 router.route('/signout')
       .get(User.signOut);
 
+/*
+  PUT api/v1/users/update
+*/
 router.route('/update')
       .put(User.updateUser);
 

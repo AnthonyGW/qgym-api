@@ -12,6 +12,7 @@ import config from 'config';
 
 // Import routes
 import authRoutes from './routes/auth.route';
+import workoutRoutes from './routes/workout.route';
 
 import { refactorError } from './utils/error.util';
 
@@ -71,6 +72,7 @@ app.use((req, res, next) => {
 
 // Use routes
 app.use(baseURL+'/users', authRoutes);
+app.use(baseURL+'/workouts', workoutRoutes);
 
 // Catch 404 errors and pass to error handler
 app.use((req, res, next) => {

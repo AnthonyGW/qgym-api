@@ -23,3 +23,7 @@ Backend API for the Quick Gym project
 | `POST` | `/api/v1/users/signin` | `{ email, password }` | `No` | `200, { message: "Authorization successful. Check session ID named connect.sid in cookies." }` |
 | `GET` | `/api/v1/users/signout` | None | `Yes` | `200, { message: "Logged out successfully." }` |
 | `PUT` | `/api/v1/users/update` | `{ currentPassword, newEmail, newPassword }` | `Yes` | `200, { message: "User data has been updated." }` |
+| `POST` | `/api/v1/workouts` | `{ name, exercises, track }` | `Yes` | `200, { id, name, exercises, track }` |
+| `GET` | `/api/v1/workouts` | None | `Yes` | `200, [ { id, name, exercises, track } ]` |
+| `PUT` | `/api/v1/workouts/:workoutID` | `{ name, exercises, track }` | `Yes` | `200, { id, name, exercises, track }` |
+| `DELETE` | `/api/v1/workouts/:workoutID` | None | `Yes` | `200, [ { message: 'Workout deleted.' } ]` |
