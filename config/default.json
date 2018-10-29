@@ -1,5 +1,6 @@
 {
   "DBName": "dev",
   "PORT": 3030,
-  "SESSION_SECRET": "cool-express-app"
+  "SESSION_SECRET": "cool-express-app",
+  "APP_SOURCE": ""
 }

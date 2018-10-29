@@ -1,5 +1,6 @@
 {
   "DBName": "",
   "PORT": "",
-  "SESSION_SECRET": ""
+  "SESSION_SECRET": "",
+  "APP_SOURCE": ""
 }

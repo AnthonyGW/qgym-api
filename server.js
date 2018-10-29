@@ -7,6 +7,7 @@ import morgan from 'morgan';
 import mongoose from 'mongoose';
 import session from 'express-session';
 import connectMongo from 'connect-mongo';
+import cors from 'cors';
 
 import config from 'config';
 
@@ -60,15 +61,9 @@ app.use(session({
 }));
 
 // Enable Cross-Origin Resource Sharing
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  if(req.method === "OPTIONS"){
-    res.header("Access-Control-Allow-Methods", "PUT, POST, DELETE");
-    return res.status(200).json({});
-  }
-  next();
-});
+app.use(cors({
+  origin: [config.get('APP_SOURCE')], credentials: true
+}));
 
 // Use routes
 app.use(baseURL+'/users', authRoutes);
