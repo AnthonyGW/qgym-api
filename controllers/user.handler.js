@@ -2,6 +2,7 @@
 
 import bcrypt from 'bcrypt';
 import User from '../models/user.model';
+import Workout from './workout.handler';
 import { verifySignup, formatUserData } from '../utils/verify.util';
 import { createError } from '../utils/error.util';
 
@@ -20,6 +21,9 @@ class UserController{
       await verifySignup(userData);
 
       const user = await User.create(userData);
+
+      Workout.addDefaultWorkout(user._id, next)
+
       return res.status(200)
                 .json({ id: user._id, email: user.email });
     } catch(error){
