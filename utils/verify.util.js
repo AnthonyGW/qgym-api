@@ -80,7 +80,10 @@ const formatWorkoutResponse = responseObject => {
     id: responseObject._id,
     name: responseObject.name,
     exercises: responseObject.exercises,
-    track: responseObject.track
+    track: responseObject.track,
+    restBetweenExercise: responseObject.restBetweenExercises,
+    exerciseDuration: responseObject.exerciseDuration,
+    description: responseObject.description,
   }
   return response;
 };

@@ -1,5 +1,6 @@
 {
-  "DBName": "dev",
+  "DBURL": "mongodb://localhost/test",
   "PORT": 3030,
-  "SESSION_SECRET": "cool-express-app"
+  "SESSION_SECRET": "",
+  "APP_SOURCE": ""
 }

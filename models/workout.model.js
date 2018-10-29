@@ -5,13 +5,26 @@ import mongoose from 'mongoose';
 const WorkoutSchema = new mongoose.Schema({
   name: {
     type: String,
-    unique: true,
     required: true,
     trim: true
   },
   exercises: {
     type: Array,
     default: [''],
+    required: false
+  },
+  restBetweenExercises: {
+    type: Number,
+    default: 10,
+    required: true
+  },
+  exerciseDuration: {
+    type: Number,
+    default: 30,
+    required: true
+  },
+  description: {
+    type: String,
     required: false
   },
   track: {

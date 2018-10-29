@@ -6,6 +6,25 @@ import { createError } from '../utils/error.util';
 
 class WorkoutController{
   // Methods for managing a user's workout sets
+
+  static async addDefaultWorkout(userId, next){
+    try{
+      const defaultWorkout = await Workout.findOne({'name': '8 Minute Workout', 'user': 'General'});
+      let newWorkout = {
+        name: defaultWorkout.name,
+        exercises: defaultWorkout.exercises,
+        restBetweenExercise: defaultWorkout.restBetweenExercise,
+        exerciseDuration: defaultWorkout.exerciseDuration,
+        description: defaultWorkout.description,
+        track: defaultWorkout.track
+      };
+      newWorkout = await formatWorkoutData(newWorkout, userId);
+      await Workout.create(newWorkout);
+      return
+    } catch(error){
+      return next(error)
+    }
+  }
   static async addWorkoutSet(req, res, next){
     // Steps:
     // 1. Check the format of the workout input
@@ -19,9 +38,17 @@ class WorkoutController{
       };
       workoutData = await formatWorkoutData(workoutData, req.session.userId);
 
+      const similarWorkout = await Workout.findOne({
+        name: workoutData.name,
+        user: req.session.userId
+      });
+
+      if(similarWorkout){
+        throw new Error('E11000 duplicate key error. .. name_1');
+      }
       const workout = await Workout.create(workoutData);
-      res.status(200)
-         .json(formatWorkoutResponse(workout));
+      return res.status(200)
+                .json(formatWorkoutResponse(workout));
     } catch(error){
       return next(error);
     }
@@ -35,8 +62,8 @@ class WorkoutController{
     try{
       let workouts = await Workout.retrieveAll(req.session.userId);
       workouts = workouts.map(workout => formatWorkoutResponse(workout));
-      res.status(200)
-         .json(workouts);
+      return res.status(200)
+                .json(workouts);
     } catch(error){
       return next(error);
     }
@@ -63,18 +90,24 @@ class WorkoutController{
     // 2. Retrieve the updated record and return it
     // 3. Send errors to the error handling middleware
     try{
-      let workout = await Workout.findOneAndUpdate({_id: req.workoutID}, req.body);
+
+      let workout = await Workout.findOne({_id: req.workoutID});
+
       if(!workout) throw createError('No workout to update.', 404);
 
       if(req.session.userId !== workout.user)
         throw createError('User is not authorized to edit this workout.', 401);
 
-      if(req.body.name === workout.name)
-        throw createError('That name has already been used.', 400);
+      if(workout.name !== req.body.name){
+        workout = await Workout.findOne({name: req.body.name, user: req.session.userId});
+        if(workout) throw createError('That name has already been used.', 400);
+      }
 
+      workout = await Workout.findOneAndUpdate({_id: req.workoutID}, req.body);
       workout = await Workout.findOne({_id: req.workoutID});
-      res.status(200)
-         .json(formatWorkoutResponse(workout));
+
+      return res.status(200)
+                .json(formatWorkoutResponse(workout));
     } catch(error){
       return next(error);
     }
@@ -95,8 +128,8 @@ class WorkoutController{
 
       workout = await Workout.findOneAndRemove({_id: req.workoutID});
       req.workoutID = '';
-      res.status(200)
-         .json({message: 'Workout deleted.'});
+      return res.status(200)
+                .json({message: 'Workout deleted.'});
     } catch(error){
       return next(error);
     }

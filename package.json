@@ -5,10 +5,10 @@
   "main": "server.js",
   "scripts": {
     "start:dev": "nodemon server --exec babel-node",
-    "start:prod": "export NODE_ENV=production && node ./dist/server.js",
-    "test": "export NODE_ENV=test && mocha --require babel-core/register --require babel-polyfill --timeout 10000 --exit",
-    "coverage": "export NODE_ENV=test && babel-node ./node_modules/.bin/babel-istanbul cover _mocha -- ./test/** --require babel-core/register --require babel-polyfill --timeout 10000 --exit",
-    "build": "rimraf dist/ && babel ./ --out-dir dist/ --ignore ./node_modules,./.babelrc,./package*.json,./README* --copy-files"
+    "start:prod": "export NODE_ENV=production && node ./scripts/replace_values.js && node ./dist/server.js",
+    "test": "export NODE_ENV=test && ./scripts/replace_values.js && babel-node ./scripts/seed.js && mocha --require babel-core/register --require babel-polyfill --timeout 10000 --exit",
+    "coverage": "export NODE_ENV=test && ./scripts/replace_values.js && babel-node ./scripts/seed.js && babel-node ./node_modules/.bin/babel-istanbul cover _mocha -- ./test/** --require babel-core/register --require babel-polyfill --timeout 10000 --exit && node ./scripts/clear_values.js",
+    "build": "export NODE_ENV=production && node ./scripts/replace_values.js && rm -rf dist && webpack --mode production --config webpack.config.js"
   },
   "repository": {
     "type": "git",
@@ -22,9 +22,12 @@
   },
   "homepage": "https://github.com/AnthonyGW/qgym-api#readme",
   "dependencies": {
+    "babel-core": "^6.26.3",
+    "babel-polyfill": "^6.26.0",
     "bcrypt": "^3.0.1",
     "config": "^2.0.1",
     "connect-mongo": "^2.0.1",
+    "cors": "^2.8.4",
     "express": "^4.16.3",
     "express-session": "^1.15.6",
     "mongoose": "^5.3.2",
@@ -32,16 +35,17 @@
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
-    "babel-core": "^6.26.3",
     "babel-istanbul": "^0.12.2",
+    "babel-loader": "^7.1.5",
     "babel-plugin-istanbul": "^5.0.1",
-    "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.7.0",
     "babel-preset-stage-3": "^6.24.1",
     "chai": "^4.2.0",
     "chai-http": "^4.2.0",
     "mocha": "^5.2.0",
     "nodemon": "^1.18.4",
-    "rimraf": "^2.6.2"
+    "webpack": "^4.23.1",
+    "webpack-cli": "^3.1.2",
+    "webpack-node-externals": "^1.7.2"
   }
 }

@@ -7,6 +7,7 @@ import morgan from 'morgan';
 import mongoose from 'mongoose';
 import session from 'express-session';
 import connectMongo from 'connect-mongo';
+import cors from 'cors';
 
 import config from 'config';
 
@@ -24,10 +25,8 @@ const MongoStore = connectMongo(session);
 // Declare app variables
 const port = config.get('PORT');
 const sessionSecret = config.get('SESSION_SECRET');
-const baseURL = '/api/v1';
-const DBURL = `${process.env.DBServer}://${process.env.DBUser}:` +
-              `${process.env.DBPassword}@${process.env.DBHost}/` +
-              config.get('DBName');
+const baseURL = '/v1';
+const DBURL = config.get('DBURL');
 
 // Connect to database
 const options = {
@@ -42,7 +41,7 @@ db.on('error', err => {
 });
 
 db.once('open', () => {
-  console.log('Connected to database ' + config.get('DBName'));
+  console.log('Connected to database ' + DBURL);
 });
 
 // Use application middleware
@@ -60,15 +59,9 @@ app.use(session({
 }));
 
 // Enable Cross-Origin Resource Sharing
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-  if(req.method === "OPTIONS"){
-    res.header("Access-Control-Allow-Methods", "PUT, POST, DELETE");
-    return res.status(200).json({});
-  }
-  next();
-});
+app.use(cors({
+  origin: config.get('APP_SOURCE'),
+  credentials: true}));
 
 // Use routes
 app.use(baseURL+'/users', authRoutes);

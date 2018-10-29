@@ -86,9 +86,22 @@ describe('workout tests', () => {
         exercises: [''],
         track: ''
       };
+      const workoutData2 = {
+        name: 'workout3',
+        exercises: [''],
+        track: ''
+      };
       const createWorkout = agent => {
         agent.post(baseURL + '/workouts')
             .send(workoutData)
+            .then(res => {
+              res.should.have.status(200);
+              res.body.should.deep.include(workoutData);
+              done();
+            }).catch(error => console.log(error.message));
+
+        agent.post(baseURL + '/workouts')
+            .send(workoutData2)
             .then(res => {
               res.should.have.status(200);
               res.body.should.deep.include(workoutData);
@@ -177,12 +190,18 @@ describe('workout tests', () => {
         exercises: [''],
         track: ''
       };
+      const workoutData2 = {
+        name: 'workout3',
+        exercises: [''],
+        track: ''
+      };
       const getWorkouts = agent => {
         agent.get(baseURL + '/workouts')
             .then(res => {
               res.should.have.status(200);
               res.body.should.be.an('array');
               res.body[0].should.deep.include(workoutData);
+              res.body[1].should.deep.include(workoutData2);
               done();
             }).catch(error => console.log(error.message));
       };
@@ -264,7 +283,7 @@ describe('workout tests', () => {
 
     it('should not duplicate a workout\'s name', done => {
       const newWorkoutData = {
-        name: 'workout1'
+        name: 'workout3'
       };
 
       const updateWorkout = (agent, workoutID) => {
