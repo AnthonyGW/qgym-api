@@ -12,13 +12,13 @@ prodConfigFile.PORT = process.env.PORT || 3030;
 prodConfigFile.SESSION_SECRET = process.env.SESSION_SECRET || 'cool-express-app';
 prodConfigFile.APP_SOURCE = process.env.APP_SOURCE || 'http://localhost:4200'
 
-fs.writeFile(testConfigFilePath, JSON.stringify(file, null, 2), function (err) {
+fs.writeFile(testConfigFilePath, JSON.stringify(testConfigFile, null, 2), function (err) {
   console.log(JSON.stringify(testConfigFile));
   if (err) return console.log(err);
   console.log('Writing env variables to ' + testConfigFilePath);
 });
 
-fs.writeFile(prodConfigFilePath, JSON.stringify(file, null, 2), function (err) {
+fs.writeFile(prodConfigFilePath, JSON.stringify(prodConfigFile, null, 2), function (err) {
   console.log(JSON.stringify(prodConfigFile));
   if (err) return console.log(err);
   console.log('Writing env variables to ' + prodConfigFilePath);
