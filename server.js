@@ -44,24 +44,47 @@ db.once('open', () => {
   console.log('Connected to database ' + DBURL);
 });
 
+let sessionData = {};
+
 // Use application middleware
 if(config.util.getEnv('NODE_ENV') !== 'test'){
+  app.set('trust proxy', true);
   app.use(morgan('combined'));
+  sessionData = {
+    secret: sessionSecret,
+    resave: false,
+    saveUninitialized: true,
+    store: new MongoStore({
+      mongooseConnection: db
+    }),
+    cookie: {
+      secure: 'auto',
+      httpOnly: false,
+      domain: 'api.quickgym.xyz',
+      maxAge: 6.048e+8
+    },
+    proxy: true
+  };
+} else {
+  sessionData = {
+    secret: sessionSecret,
+    resave: true,
+    saveUninitialized: false,
+    store: new MongoStore({
+      mongooseConnection: db
+    })
+  };
 }
+
 app.use(express.json());
-app.use(session({
-  secret: sessionSecret,
-  resave: true,
-  saveUninitialized: false,
-  store: new MongoStore({
-    mongooseConnection: db
-  })
-}));
+
+app.use(session(sessionData));
 
 // Enable Cross-Origin Resource Sharing
 app.use(cors({
-  origin: config.get('APP_SOURCE'),
-  credentials: true}));
+  origin: [config.get('APP_SOURCE'), 'http://localhost:4200'],
+  credentials: true
+}));
 
 // Use routes
 app.use(baseURL+'/users', authRoutes);

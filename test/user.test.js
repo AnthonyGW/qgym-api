@@ -194,7 +194,7 @@ describe('user authentication tests', () => {
           .end((error, res) => {
             res.should.have.status(404);
             res.should.be.a('object');
-            res.body.error.message.should.be.eql('Authentication failed.');
+            res.body.error.message.should.be.eql('Authentication failed. Email or password not found');
             done();
           });
     });
@@ -210,7 +210,7 @@ describe('user authentication tests', () => {
           .end((error, res) => {
             res.should.have.status(401);
             res.should.be.a('object');
-            res.body.error.message.should.be.eql('Authentication failed.');
+            res.body.error.message.should.be.eql('Authentication failed. Email or password not found');
             done();
           });
     });
@@ -310,7 +310,7 @@ describe('user functionality tests', () => {
             .send(userData)
             .then(res => {
               res.should.have.status(401);
-              res.body.error.message.should.be.eql('Authentication failed.');
+              res.body.error.message.should.be.eql('Authentication failed. Email or password not found');
               done();
             });
       };

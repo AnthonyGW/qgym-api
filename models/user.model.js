@@ -19,12 +19,12 @@ const UserSchema = new mongoose.Schema({
 
 const checkUser = async (user, password, resolve, reject) => {
   try{
-    if(!user) return reject(createError("Authentication failed.", 404));
+    if(!user) return reject(createError("Authentication failed. Email or password not found", 404));
     const result = await bcrypt.compare(password, user.password);
     if(result){
       return resolve(user._id);
     } else {
-      return reject(createError("Authentication failed.", 401));
+      return reject(createError("Authentication failed. Email or password not found", 401));
     }
   } catch(error){
     reject(error)

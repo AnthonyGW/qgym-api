@@ -40,9 +40,7 @@ const workoutData = {
     'sidePlank'
   ],
   user: 'General',
-  description: `A basic workout plan that has all the exercises with no repetition.
-  <br>
-  You are not fit until you can beat this in one go.`,
+  description: 'A basic workout plan that has all the exercises with no repetition. <br> You are not fit until you can beat this in one go.',
   track: 'djmister-m/pntwrdukibjh128'
 }
 

@@ -191,15 +191,13 @@ describe('workout tests', () => {
   describe('test user can read and manipulate their workouts', () => {
 
     it('should return a user\'s workouts', done => {
-      const workoutData = [
+      const workoutsData = [
         {
           name: 'workout1',
-          exercises: [''],
           track: ''
         },
         {
           name: 'workout3',
-          exercises: [''],
           track: ''
         },
         {
@@ -211,9 +209,8 @@ describe('workout tests', () => {
             .then(res => {
               res.should.have.status(200);
               res.body.should.be.an('array');
-              res.body.should.have.nested.include(workoutData);
-              // res.body[1].should.deep.include(workoutData);
-              // res.body[2].should.deep.include(workoutData2);
+              const testBody = res.body.map(val => ({name: val.name, track: val.track}));
+              testBody.should.deep.include.members(workoutsData);
               done();
             }).catch(error => console.log(error.message));
       };
@@ -239,8 +236,9 @@ describe('workout tests', () => {
             .then(res => {
               res.should.have.status(200);
               res.body.should.be.an('array');
-              // res.body[1].should.not.deep.include(workoutData);
-              // res.body[1].should.deep.include(workoutData2);
+              const testBody = res.body.map(val => ({name: val.name, exercises: val.exercises, track: val.track}));
+              testBody.should.deep.include(workoutData2);
+              testBody.should.not.deep.include(workoutData);
               done();
             }).catch(error => console.log(error.message));
       };
