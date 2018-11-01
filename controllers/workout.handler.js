@@ -8,19 +8,23 @@ class WorkoutController{
   // Methods for managing a user's workout sets
 
   static async addDefaultWorkout(userId, next){
+    // Steps:
+    // 1. Create the new user's workout based on the template of the default workout
+    // 2. Add a new record with the user's ID
+    // 3. Send errors to the error handling middleware
     try{
       const defaultWorkout = await Workout.findOne({'name': '8 Minute Workout', 'user': 'General'});
       let newWorkout = {
-        name: defaultWorkout.name,
+        name: defaultWorkout.name + ' - Personal',
         exercises: defaultWorkout.exercises,
         restBetweenExercise: defaultWorkout.restBetweenExercise,
         exerciseDuration: defaultWorkout.exerciseDuration,
         description: defaultWorkout.description,
-        track: defaultWorkout.track
+        track: defaultWorkout.track,
       };
       newWorkout = await formatWorkoutData(newWorkout, userId);
-      await Workout.create(newWorkout);
-      return
+      const workout = Workout.create(newWorkout);
+      return workout
     } catch(error){
       return next(error)
     }
@@ -34,7 +38,10 @@ class WorkoutController{
       let workoutData = {
         name: req.body.name,
         exercises: req.body.exercises,
-        track: req.body.track
+        track: req.body.track,
+        restBetweenExercise: req.body.restBetweenExercise,
+        exerciseDuration: req.body.exerciseDuration,
+        description: req.body.description,
       };
       workoutData = await formatWorkoutData(workoutData, req.session.userId);
 
@@ -49,6 +56,34 @@ class WorkoutController{
       const workout = await Workout.create(workoutData);
       return res.status(200)
                 .json(formatWorkoutResponse(workout));
+    } catch(error){
+      return next(error);
+    }
+  }
+
+  static async getDefaultWorkout(req, res, next){
+    // Steps:
+    // 1. Return the default workout
+    // 2. Send errors to the error handling middleware
+    try{
+      let workout = await Workout.findOne({'name': '8 Minute Workout', 'user': 'General'});
+      workout = formatWorkoutResponse(workout);
+      return res.status(200)
+                .json(workout);
+    } catch(error){
+      return next(error);
+    }
+  }
+
+  static async getDefaultExercises(req, res, next){
+    // Steps:
+    // 1. Retrieve the exercises record
+    // 2. Send errors to the error handling middleware
+    try{
+      let workout = await Workout.findOne({'name': '8 Minute Workout', 'user': 'General'});
+      workout = formatWorkoutResponse(workout);
+      return res.status(200)
+                .json(workout);
     } catch(error){
       return next(error);
     }

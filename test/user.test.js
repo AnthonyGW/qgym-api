@@ -10,7 +10,7 @@ import User from '../models/user.model';
 chai.use(chaiHttp);
 
 const should = chai.should();
-const baseURL = '/api/v1';
+const baseURL = '/v1';
 
 const userSignin = async (signinData, callback) => {
   try{
@@ -27,6 +27,10 @@ const userSignin = async (signinData, callback) => {
 describe('user authentication tests', () => {
 
   before(done => {
+    User.deleteMany({}, done);
+  });
+
+  after(done => {
     User.deleteMany({}, done);
   });
 
@@ -109,6 +113,21 @@ describe('user authentication tests', () => {
             res.should.have.status(400);
             res.should.be.a('object');
             res.body.error.message.should.be.eql('Incorrect email format.');
+            done();
+          });
+    });
+
+    it('should return default workout to any user', done => {
+      const workoutData = {
+        name: '8 Minute Workout',
+        track: 'djmister-m/pntwrdukibjh128'
+      };
+      chai.request(server)
+          .get(baseURL + '/workouts/default')
+          .end((error, res) => {
+            res.should.have.status(200);
+            res.body.should.be.an('object');
+            res.body.should.deep.include(workoutData);
             done();
           });
     });

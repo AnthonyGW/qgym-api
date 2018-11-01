@@ -4,9 +4,9 @@
 import mongoose from 'mongoose';
 import config from 'config';
 import Workout from '../models/workout.model';
-const DBURL = `${process.env.DBServer}://${process.env.DBUser}:` +
-              `${process.env.DBPassword}@${process.env.DBHost}/` +
-              config.get('DBName');
+import Exercise from '../models/exercise.model';
+
+const DBURL = config.get('DBURL');
 
 // Connect to database
 const options = {
@@ -20,7 +20,7 @@ db.on('error', err => {
 });
 
 db.once('open', () => {
-  console.log('Connected to database ' + config.get('DBName'));
+  console.log('Connected to database ' + config.get('DBURL'));
 });
 
 const workoutData = {
@@ -43,37 +43,9 @@ const workoutData = {
   description: `A basic workout plan that has all the exercises with no repetition.
   <br>
   You are not fit until you can beat this in one go.`,
-  track: 'imaxx-ableton/survivor-eye-of-the-tigerimaxx-remix'
+  track: 'djmister-m/pntwrdukibjh128'
 }
 
-const DefaultExerciseSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    unique: true,
-    required: true,
-    trim: true
-  },
-  title: {
-    type: String,
-    unique: true,
-    required: true,
-    trim: true
-  },
-  description: {
-    type: String,
-    required: true
-  },
-  image: {
-    type: String,
-    required: true
-  },
-  steps: {
-    type: String,
-    required: false
-  }
-});
-
-const Exercise = mongoose.model('Exercise', DefaultExerciseSchema);
 const exerciseData = [
   {
     name: 'rest',
@@ -212,10 +184,15 @@ Workout.deleteMany({name: '8 Minute Workout', user: 'General'})
         Exercise.deleteMany({})
         .then(() => {
           console.log('Deleted exercises.')
-          exerciseData.forEach(exercise => {
-            Exercise.create(exercise)
+          // using a standard for loop to iterate through exerciseData,
+          // since the other methods like forEach are not strictly sequential
+          for(let index = 0; index < exerciseData.length; index++){
+            Exercise.create(exerciseData[index])
                     .then(exercise => console.log('Added exercise: ', exercise.name))
-                    .catch(error => console.error(error));
-          });
+                    .catch(error => console.error(error))
+                    .then(val => {
+                      if(index === exerciseData.length - 1) process.exit();
+                    });
+          }
         }).catch(error => console.error(error));
-      }).catch(error => console.error(error));
+      }).catch(error => console.error(error))
