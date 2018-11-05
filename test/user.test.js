@@ -10,7 +10,7 @@ import User from '../models/user.model';
 chai.use(chaiHttp);
 
 const should = chai.should();
-const baseURL = '/api/v1';
+const baseURL = '/v1';
 
 const userSignin = async (signinData, callback) => {
   try{
@@ -27,6 +27,10 @@ const userSignin = async (signinData, callback) => {
 describe('user authentication tests', () => {
 
   before(done => {
+    User.deleteMany({}, done);
+  });
+
+  after(done => {
     User.deleteMany({}, done);
   });
 
@@ -112,6 +116,21 @@ describe('user authentication tests', () => {
             done();
           });
     });
+
+    it('should return default workout to any user', done => {
+      const workoutData = {
+        name: '8 Minute Workout',
+        track: 'djmister-m/pntwrdukibjh128'
+      };
+      chai.request(server)
+          .get(baseURL + '/workouts/default')
+          .end((error, res) => {
+            res.should.have.status(200);
+            res.body.should.be.an('object');
+            res.body.should.deep.include(workoutData);
+            done();
+          });
+    });
   });
   
   describe('test user sign in and functionality', () => {
@@ -175,7 +194,7 @@ describe('user authentication tests', () => {
           .end((error, res) => {
             res.should.have.status(404);
             res.should.be.a('object');
-            res.body.error.message.should.be.eql('Authentication failed.');
+            res.body.error.message.should.be.eql('Authentication failed. Email or password not found');
             done();
           });
     });
@@ -191,7 +210,7 @@ describe('user authentication tests', () => {
           .end((error, res) => {
             res.should.have.status(401);
             res.should.be.a('object');
-            res.body.error.message.should.be.eql('Authentication failed.');
+            res.body.error.message.should.be.eql('Authentication failed. Email or password not found');
             done();
           });
     });
@@ -291,7 +310,7 @@ describe('user functionality tests', () => {
             .send(userData)
             .then(res => {
               res.should.have.status(401);
-              res.body.error.message.should.be.eql('Authentication failed.');
+              res.body.error.message.should.be.eql('Authentication failed. Email or password not found');
               done();
             });
       };

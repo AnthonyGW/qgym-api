@@ -8,7 +8,7 @@ require('babel-polyfill');
 
 module.exports = {
   entry: {
-    server: ['babel-polyfill', './server.js'],
+    server: ['babel-core/register', 'babel-polyfill', './server.js'],
   },
   output: {
     path: path.join(__dirname, 'dist'),

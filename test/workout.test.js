@@ -10,7 +10,7 @@ import Workout from '../models/workout.model';
 chai.use(chaiHttp);
 
 const should = chai.should();
-const baseURL = '/api/v1';
+const baseURL = '/v1';
 
 const userSignin = async (callback, user=1) => {
   const signinData1 = {
@@ -41,8 +41,14 @@ const userSignin = async (callback, user=1) => {
 describe('workout tests', () => {
 
   before(done => {
-    Workout.deleteMany({}, done);
+    Workout.deleteMany({name: {$in: ['workout1', 'workout2', 'workout3', 'workout4']}}).then(res => {
+      Workout.deleteMany({name: '8 Minute Workout - Personal'}, done);
+    });
   });
+
+  after(done => {
+    Workout.deleteMany({name: '8 Minute Workout - Personal'}, done);
+  })
 
   describe('add test data', () => {
 
@@ -185,23 +191,26 @@ describe('workout tests', () => {
   describe('test user can read and manipulate their workouts', () => {
 
     it('should return a user\'s workouts', done => {
-      const workoutData = {
-        name: 'workout1',
-        exercises: [''],
-        track: ''
-      };
-      const workoutData2 = {
-        name: 'workout3',
-        exercises: [''],
-        track: ''
-      };
+      const workoutsData = [
+        {
+          name: 'workout1',
+          track: ''
+        },
+        {
+          name: 'workout3',
+          track: ''
+        },
+        {
+          name: '8 Minute Workout - Personal',
+          track: 'djmister-m/pntwrdukibjh128'
+        }];
       const getWorkouts = agent => {
         agent.get(baseURL + '/workouts')
             .then(res => {
               res.should.have.status(200);
               res.body.should.be.an('array');
-              res.body[0].should.deep.include(workoutData);
-              res.body[1].should.deep.include(workoutData2);
+              const testBody = res.body.map(val => ({name: val.name, track: val.track}));
+              testBody.should.deep.include.members(workoutsData);
               done();
             }).catch(error => console.log(error.message));
       };
@@ -227,8 +236,9 @@ describe('workout tests', () => {
             .then(res => {
               res.should.have.status(200);
               res.body.should.be.an('array');
-              res.body[0].should.not.deep.include(workoutData);
-              res.body[0].should.deep.include(workoutData2);
+              const testBody = res.body.map(val => ({name: val.name, exercises: val.exercises, track: val.track}));
+              testBody.should.deep.include(workoutData2);
+              testBody.should.not.deep.include(workoutData);
               done();
             }).catch(error => console.log(error.message));
       };
@@ -367,7 +377,7 @@ describe('workout tests', () => {
         agent.get(baseURL + '/workouts')
             .then(res => {
               res.should.have.status(200);
-              deleteWorkout(agent, res.body[0].id)
+              deleteWorkout(agent, res.body[1].id)
             }).catch(error => console.log(error.message));
       };
 
@@ -389,7 +399,7 @@ describe('workout tests', () => {
 
     it('should create a new workout', done => {
       const workoutData = {
-        name: 'workout1',
+        name: 'workout4',
         exercises: [''],
         track: ''
       };

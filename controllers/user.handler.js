@@ -12,7 +12,8 @@ class UserController{
     // Steps:
     // 1. Check the format of the user input
     // 2. Create a new User record with the input data
-    // 3. Send errors to the error handling middleware
+    // 3. Add default workout for the user
+    // 4. Send errors to the error handling middleware
     try{
       const userData = {
         email: req.body.email.replace(/\s+/g, ''),
@@ -22,7 +23,7 @@ class UserController{
 
       const user = await User.create(userData);
 
-      Workout.addDefaultWorkout(user._id, next)
+      const workout = Workout.addDefaultWorkout(user._id, next);
 
       return res.status(200)
                 .json({ id: user._id, email: user.email });

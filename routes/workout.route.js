@@ -11,25 +11,37 @@ router.param("workoutID", (req, res, next, id) => {
 });
 
 /*
-  POST api/v1/workouts
+  POST v1/workouts
 */
 router.route('/')
       .post(mid.requiresSignin, Workout.addWorkoutSet);
 
 /*
-  GET api/v1/workouts
+  GET v1/workouts
 */
 router.route('/')
       .get(mid.requiresSignin, Workout.getAllWorkouts);
 
 /*
-  PUT api/v1/workouts/:workoutID
+  GET v1/workouts/default
+*/
+router.route('/default')
+      .get(Workout.getDefaultWorkout);
+
+/*
+  GET v1/workouts/exercises
+*/
+router.route('/exercises')
+      .get(Workout.getDefaultExercises);
+
+/*
+  PUT v1/workouts/:workoutID
 */
 router.route('/:workoutID')
       .put(mid.requiresSignin, Workout.updateWorkout);
 
 /*
-  DELETE api/v1/workouts/:workoutID
+  DELETE v1/workouts/:workoutID
 */
 router.route('/:workoutID')
       .delete(mid.requiresSignin, Workout.deleteWorkout);
